@@ -11,6 +11,7 @@ import flixel.FlxG;
 class Player extends FlxSprite
 {
 	public var speed:Float = 600;
+	public var rof:Float = 5;
 
 	public function new(X:Float=0, Y:Float=0) 
 	{

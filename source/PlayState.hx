@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxTypedSpriteGroup;
+import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxMath;
@@ -20,6 +21,8 @@ class PlayState extends FlxState
 	
 	 private var player:Player;
 	 private var grpBullet:FlxTypedSpriteGroup<Bullet>;
+	 private var sndBullet:FlxSound;
+	 private var countFrame:Int = 0;
 	 
 	override public function create():Void
 	{
@@ -29,6 +32,7 @@ class PlayState extends FlxState
 		player = new Player(640,600);
 		add(player);
 		
+		sndBullet = FlxG.sound.load(AssetPaths.shot1__wav);
 		super.create();
 	}
 	
@@ -48,11 +52,14 @@ class PlayState extends FlxState
 	 */
 	override public function update():Void
 	{
-		if (FlxG.keys.anyPressed(["SPACE"]))
+		countFrame++;
+		if (FlxG.keys.anyPressed(["SPACE"]) && countFrame >= player.rof)
 		{
 			grpBullet.add(new Bullet(player.x+12.5, player.y));
 			grpBullet.add(new Bullet(player.x + 72.5, player.y));
-			FlxG.camera.shake(0.001,0.1, null, true, 2);
+			FlxG.camera.shake(0.001, 0.1, null, true, 2);
+			sndBullet.play(true);
+			countFrame = 0;
 		}
 		super.update();
 	}	
