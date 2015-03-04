@@ -3,9 +3,11 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxTypedSpriteGroup;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxMath;
+import flixel.util.FlxDestroyUtil;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -15,8 +17,18 @@ class PlayState extends FlxState
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
+	
+	 private var player:Player;
+	 private var grpBullet:FlxTypedSpriteGroup<Bullet>;
+	 
 	override public function create():Void
 	{
+		grpBullet = new FlxTypedSpriteGroup<Bullet>();
+		add(grpBullet);
+		
+		player = new Player(640,600);
+		add(player);
+		
 		super.create();
 	}
 	
@@ -26,6 +38,8 @@ class PlayState extends FlxState
 	 */
 	override public function destroy():Void
 	{
+		player = FlxDestroyUtil.destroy(player);
+		grpBullet = FlxDestroyUtil.destroy(grpBullet);
 		super.destroy();
 	}
 
@@ -34,6 +48,12 @@ class PlayState extends FlxState
 	 */
 	override public function update():Void
 	{
+		if (FlxG.keys.anyPressed(["SPACE"]))
+		{
+			grpBullet.add(new Bullet(player.x+12.5, player.y));
+			grpBullet.add(new Bullet(player.x + 72.5, player.y));
+			FlxG.camera.shake(0.001,0.1, null, true, 2);
+		}
 		super.update();
 	}	
 }
