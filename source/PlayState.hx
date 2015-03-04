@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxTypedSpriteGroup;
+import flixel.input.gamepad.XboxButtonID;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
@@ -53,7 +54,8 @@ class PlayState extends FlxState
 	override public function update():Void
 	{
 		countFrame++;
-		if (FlxG.keys.anyPressed(["SPACE"]) && countFrame >= player.rof)
+		var shoot:Bool = player.gamePad != null ? player.gamePad.pressed(XboxButtonID.RIGHT_TRIGGER) : FlxG.keys.anyPressed(["SPACE"]);
+		if (shoot && countFrame >= player.rof)
 		{
 			grpBullet.add(new Bullet(player.x+12.5, player.y));
 			grpBullet.add(new Bullet(player.x + 72.5, player.y));

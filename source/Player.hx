@@ -2,6 +2,8 @@ package ;
 
 import flixel.FlxSprite;
 import flixel.FlxObject;
+import flixel.input.gamepad.FlxGamepad;
+import flixel.input.gamepad.XboxButtonID;
 import flixel.util.FlxAngle;
 import flixel.FlxG;
 /**
@@ -12,6 +14,8 @@ class Player extends FlxSprite
 {
 	public var speed:Float = 600;
 	public var rof:Float = 5;
+	
+	public var gamePad:FlxGamepad;
 
 	public function new(X:Float=0, Y:Float=0) 
 	{
@@ -21,6 +25,8 @@ class Player extends FlxSprite
 		setFacingFlip(FlxObject.RIGHT, true, false);
 		animation.add("lr", [1]);
 		animation.add("ud", [0]);
+		
+		gamePad = FlxG.gamepads.lastActive;
 	}
 	
 	private function movement():Void
@@ -29,12 +35,23 @@ class Player extends FlxSprite
 		var _down:Bool = false;
 		var _left:Bool = false;
 		var _right:Bool = false;
-		
+
 		#if !FLX_NO_KEYBOARD
-		_up = FlxG.keys.anyPressed(["UP", "W"]);
-		_down = FlxG.keys.anyPressed(["DOWN", "S"]);
-		_left = FlxG.keys.anyPressed(["LEFT", "A"]);
-		_right = FlxG.keys.anyPressed(["RIGHT", "D"]);
+		_up = gamePad != null ? gamePad.pressed(XboxButtonID.DPAD_UP) : FlxG.keys.anyPressed(["UP", "W"]);
+		_down = gamePad != null ? gamePad.pressed(XboxButtonID.DPAD_DOWN) : FlxG.keys.anyPressed(["DOWN", "S"]);
+		_left = gamePad != null ? gamePad.pressed(XboxButtonID.DPAD_LEFT) : FlxG.keys.anyPressed(["LEFT", "A"]);
+		_right = gamePad != null ? gamePad.pressed(XboxButtonID.DPAD_RIGHT) : FlxG.keys.anyPressed(["RIGHT", "D"]);
+		//if (gamePad)
+		//{
+			//_up = gamePad.pressed(XboxButtonID.DPAD_UP);
+			//_down = gamePad.pressed(XboxButtonID.DPAD_DOWN);
+			//_left = gamePad.pressed(XboxButtonID.DPAD_LEFT);
+			//_right = gamePad.pressed(XboxButtonID.DPAD_RIGHT);
+		//}
+		/*_up = FlxG.keys.anyPressed(["UP", "W"]) || (if (gamePad) gamePad.pressed(XboxButtonID.DPAD_UP););
+		_down = FlxG.keys.anyPressed(["DOWN", "S"]) || (if (gamePad) gamePad.pressed(XboxButtonID.DPAD_DOWN););
+		_left = FlxG.keys.anyPressed(["LEFT", "A"]) || (if (gamePad) gamePad.pressed(XboxButtonID.DPAD_LEFT););
+		_right = FlxG.keys.anyPressed(["RIGHT", "D"]) || (if (gamePad) gamePad.pressed(XboxButtonID.DPAD_RIGHT););*/
 		#end
 		#if mobile
 		_up = PlayState.virtualPad.buttonUp.status == FlxButton.PRESSED;
