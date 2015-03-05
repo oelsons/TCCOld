@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 import flixel.FlxObject;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.XboxButtonID;
+import flixel.text.FlxText;
 import flixel.util.FlxAngle;
 import flixel.FlxG;
 import haxe.Log;
@@ -28,7 +29,7 @@ class Player extends FlxSprite
 		animation.add("ud", [0]);
 		
 		gamePad = FlxG.gamepads.lastActive;
-		if(gamePad != null) gamePad.deadZone = 0.2;
+		if (gamePad != null) gamePad.deadZone = 0.2;
 	}
 	
 	private function movement():Void
