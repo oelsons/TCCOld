@@ -23,7 +23,7 @@ class PlayState extends FlxState
 	 private var player:Player;
 	 private var grpBullet:FlxTypedSpriteGroup<Bullet>;
 	 private var sndBullet:FlxSound;
-	 private var countFrame:Float = 0;
+	 private var countFrame:Int = 0;
 	 
 	override public function create():Void
 	{
@@ -32,8 +32,6 @@ class PlayState extends FlxState
 		
 		player = new Player(640,600);
 		add(player);
-		
-		add(new FlxText(100, 100, 200, "Xbox360 Controller " + ((player.gamePad == null) ? "NOT FOUND" : "FOUND")));
 		
 		sndBullet = FlxG.sound.load(AssetPaths.shot1__wav);
 		super.create();
@@ -55,18 +53,18 @@ class PlayState extends FlxState
 	 */
 	override public function update():Void
 	{
-		var shoot:Bool = (player.gamePad != null && player.gamePad.pressed(XboxButtonID.RIGHT_TRIGGER)) ? true : FlxG.keys.anyPressed(["SPACE"]);
-		if (shoot)
+		countFrame++;
+		if (countFrame >= player.rof)
 		{
-			if (countFrame <= 0)
+			var shoot:Bool = (player.gamePad != null && player.gamePad.pressed(XboxButtonID.RIGHT_TRIGGER)) ? true : FlxG.keys.anyPressed(["SPACE"]);
+			if (shoot)
 			{
-					grpBullet.add(new Bullet(player.x+12.5, player.y));
-					grpBullet.add(new Bullet(player.x + 72.5, player.y));
-					FlxG.camera.shake(0.001, 0.1, null, true, 2);
-					sndBullet.play(true);
-					countFrame = player.rof;
+				grpBullet.add(new Bullet(player.x+12.5, player.y));
+				grpBullet.add(new Bullet(player.x + 72.5, player.y));
+				FlxG.camera.shake(0.001, 0.1, null, true, 2);
+				sndBullet.play(true);
 			}
-			countFrame--;
+			countFrame = 0;
 		}
 		super.update();
 	}	
