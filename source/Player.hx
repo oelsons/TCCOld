@@ -6,6 +6,7 @@ import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.XboxButtonID;
 import flixel.util.FlxAngle;
 import flixel.FlxG;
+import haxe.Log;
 /**
  * ...
  * @author ...
@@ -27,6 +28,7 @@ class Player extends FlxSprite
 		animation.add("ud", [0]);
 		
 		gamePad = FlxG.gamepads.lastActive;
+		if(gamePad != null) gamePad.deadZone = 0.2;
 	}
 	
 	private function movement():Void
@@ -35,23 +37,24 @@ class Player extends FlxSprite
 		var _down:Bool = false;
 		var _left:Bool = false;
 		var _right:Bool = false;
-
+		
 		#if !FLX_NO_KEYBOARD
-		_up = gamePad != null ? gamePad.pressed(XboxButtonID.DPAD_UP) : FlxG.keys.anyPressed(["UP", "W"]);
-		_down = gamePad != null ? gamePad.pressed(XboxButtonID.DPAD_DOWN) : FlxG.keys.anyPressed(["DOWN", "S"]);
-		_left = gamePad != null ? gamePad.pressed(XboxButtonID.DPAD_LEFT) : FlxG.keys.anyPressed(["LEFT", "A"]);
-		_right = gamePad != null ? gamePad.pressed(XboxButtonID.DPAD_RIGHT) : FlxG.keys.anyPressed(["RIGHT", "D"]);
-		//if (gamePad)
-		//{
+		//_up = FlxG.keys.anyPressed(["UP", "W"]);
+		//_down = FlxG.keys.anyPressed(["DOWN", "S"]);
+		//_left = FlxG.keys.anyPressed(["LEFT", "A"]);
+		//_right = FlxG.keys.anyPressed(["RIGHT", "D"]);
+		_up = (gamePad != null && (gamePad.pressed(XboxButtonID.DPAD_UP) || gamePad.getYAxis(1) < 0)) ? true : FlxG.keys.anyPressed(["UP", "W"]);
+		_down = (gamePad != null && (gamePad.pressed(XboxButtonID.DPAD_DOWN) || gamePad.getYAxis(1) > 0)) ? true : FlxG.keys.anyPressed(["DOWN", "S"]);
+		_left = (gamePad != null && (gamePad.pressed(XboxButtonID.DPAD_LEFT) || gamePad.getXAxis(0) < 0))  ? true : FlxG.keys.anyPressed(["LEFT", "A"]);
+		_right = (gamePad != null && (gamePad.pressed(XboxButtonID.DPAD_RIGHT) || gamePad.getXAxis(0) > 0)) ? true : FlxG.keys.anyPressed(["RIGHT", "D"]);
+		if (gamePad != null)
+		{
+			trace('trace', gamePad.getXAxis(0), gamePad.getYAxis(1));
 			//_up = gamePad.pressed(XboxButtonID.DPAD_UP);
 			//_down = gamePad.pressed(XboxButtonID.DPAD_DOWN);
 			//_left = gamePad.pressed(XboxButtonID.DPAD_LEFT);
 			//_right = gamePad.pressed(XboxButtonID.DPAD_RIGHT);
-		//}
-		/*_up = FlxG.keys.anyPressed(["UP", "W"]) || (if (gamePad) gamePad.pressed(XboxButtonID.DPAD_UP););
-		_down = FlxG.keys.anyPressed(["DOWN", "S"]) || (if (gamePad) gamePad.pressed(XboxButtonID.DPAD_DOWN););
-		_left = FlxG.keys.anyPressed(["LEFT", "A"]) || (if (gamePad) gamePad.pressed(XboxButtonID.DPAD_LEFT););
-		_right = FlxG.keys.anyPressed(["RIGHT", "D"]) || (if (gamePad) gamePad.pressed(XboxButtonID.DPAD_RIGHT););*/
+		}
 		#end
 		#if mobile
 		_up = PlayState.virtualPad.buttonUp.status == FlxButton.PRESSED;

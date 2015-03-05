@@ -54,13 +54,16 @@ class PlayState extends FlxState
 	override public function update():Void
 	{
 		countFrame++;
-		var shoot:Bool = player.gamePad != null ? player.gamePad.pressed(XboxButtonID.RIGHT_TRIGGER) : FlxG.keys.anyPressed(["SPACE"]);
-		if (shoot && countFrame >= player.rof)
+		if (countFrame >= player.rof)
 		{
-			grpBullet.add(new Bullet(player.x+12.5, player.y));
-			grpBullet.add(new Bullet(player.x + 72.5, player.y));
-			FlxG.camera.shake(0.001, 0.1, null, true, 2);
-			sndBullet.play(true);
+			var shoot:Bool = (player.gamePad != null && player.gamePad.pressed(XboxButtonID.RIGHT_TRIGGER)) ? true : FlxG.keys.anyPressed(["SPACE"]);
+			if (shoot)
+			{
+				grpBullet.add(new Bullet(player.x+12.5, player.y));
+				grpBullet.add(new Bullet(player.x + 72.5, player.y));
+				FlxG.camera.shake(0.001, 0.1, null, true, 2);
+				sndBullet.play(true);
+			}
 			countFrame = 0;
 		}
 		super.update();
