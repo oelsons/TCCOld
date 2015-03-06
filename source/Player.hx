@@ -4,7 +4,6 @@ import flixel.FlxSprite;
 import flixel.FlxObject;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.XboxButtonID;
-import flixel.text.FlxText;
 import flixel.util.FlxAngle;
 import flixel.FlxG;
 import haxe.Log;
@@ -16,9 +15,9 @@ class Player extends FlxSprite
 {
 	public var speed:Float = 600;
 	public var rof:Float = 5;
-	
-	public var gamePad:FlxGamepad;
 
+	public var gamePad:FlxGamepad;
+	
 	public function new(X:Float=0, Y:Float=0) 
 	{
 		super(X, Y);
@@ -27,6 +26,7 @@ class Player extends FlxSprite
 		setFacingFlip(FlxObject.RIGHT, true, false);
 		animation.add("lr", [1]);
 		animation.add("ud", [0]);
+		animation.add("destroy", [2,3,4,5,6,7,8,9], 10, false);
 		
 		gamePad = FlxG.gamepads.lastActive;
 		if (gamePad != null) gamePad.deadZone = 0.2;
@@ -63,7 +63,6 @@ class Player extends FlxSprite
 		_left = PlayState.virtualPad.buttonLeft.status == FlxButton.PRESSED;
 		_right = PlayState.virtualPad.buttonRight.status == FlxButton.PRESSED;
 		#end
-		
 		if (_up && _down) _up = _down = false;
 		if (_left && _right) _left = _right = false;
 		
@@ -122,7 +121,16 @@ class Player extends FlxSprite
 	
 	override public function update():Void
 	{
-		movement();
+		if (alive)
+		{
+			if (FlxG.keys.anyPressed(["G"]))
+			{
+				alive = false;
+				animation.play("destroy");
+			}else {
+				movement();	
+			}
+		}
 		super.update();
 	}
 }

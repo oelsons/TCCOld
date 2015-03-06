@@ -1,6 +1,7 @@
 package ;
 import flixel.FlxSprite;
 import flixel.util.FlxAngle;
+import flixel.util.FlxDestroyUtil;
 /**
  * ...
  * @author ...
