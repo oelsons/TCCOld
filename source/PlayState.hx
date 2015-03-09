@@ -27,20 +27,20 @@ class PlayState extends FlxState
 	
 	 private var player:Player;
 	 private var grpEnemy:FlxTypedGroup<Enemy>;
-	 private var grpBullet:FlxTypedGroup<PlayerBullet>;
+	 private var grpBullet:FlxTypedGroup<Bullet>;
 	 private var sndBullet:FlxSound;
 	 private var countFrame:Float = 0;
 	 
 	 private var fps:FPS = new FPS();
+	 //private var weapon:FlxWeapon = new FlxWeapon("arma", null, Bullet);
 	 
 	override public function create():Void
 	{
-		grpBullet = new FlxTypedGroup<PlayerBullet>();
+		grpBullet = new FlxTypedGroup<Bullet>();
 		add(grpBullet);
-
-		player = new Player(640,600);
-		add(player);
 		
+		startPlayer();
+
 		grpEnemy = new FlxTypedGroup<Enemy>();
 		add(grpEnemy);
 		grpEnemy.add(new Enemy(500, 100));
@@ -51,6 +51,12 @@ class PlayState extends FlxState
 		
 		sndBullet = FlxG.sound.load(AssetPaths.shot1__wav);
 		super.create();
+	}
+	
+	function startPlayer()
+	{
+		player = new Player(640,600);
+		add(player);
 	}
 	
 	/**
@@ -77,8 +83,8 @@ class PlayState extends FlxState
 		{
 			if (countFrame <= 0)
 			{
-					grpBullet.add(new PlayerBullet(player.x+12.5, player.y+5));
-					grpBullet.add(new PlayerBullet(player.x + 72.5, player.y+5));
+					grpBullet.add(new Bullet(player.x+12.5, player.y+5));
+					grpBullet.add(new Bullet(player.x + 72.5, player.y+5));
 					FlxG.camera.shake(0.001, 0.1, null, true, 2);
 					sndBullet.play(true);
 					countFrame = player.rof;
@@ -87,26 +93,38 @@ class PlayState extends FlxState
 		}
 		//FlxG.overlap(grpBullet, grpEnemy, bulletHitEnemy);
 		grpBullet.forEach(bulletTest);
+		grpEnemy.forEach(hitTest);
 	}
 	
-	private function bulletTest(B:PlayerBullet)
+	private function hitTest(E:Enemy)
 	{
-		if (B.y < -20) destroyBullet(B);
+		if (FlxG.pixelPerfectOverlap(E, player))
+		{
+			player.killPlayer();
+			player = FlxDestroyUtil.destroy(player);
+			startPlayer();
+		}
+	}
+	
+	private function bulletTest(B:Bullet)
+	{
+		if (!B.isOnScreen(FlxG.camera)) destroyBullet(B);
 		grpEnemy.forEach(function(E:Enemy) {
 			if (FlxG.pixelPerfectOverlap(B, E))
 			{
 				bulletHitEnemy(B, E);
-			} } );
+			}});
+		trace(grpBullet.length);
 	}
 	
-	private function destroyBullet(B:PlayerBullet)
+	private function destroyBullet(B:Bullet)
 	{
 		B.kill();
 		B.destroy();
 		grpBullet.remove(B);
 	}
 	
-	private function bulletHitEnemy(B:PlayerBullet, E:Enemy)
+	private function bulletHitEnemy(B:Bullet, E:Enemy)
 	{
 		if (E.alive && E.exists && B.alive && B.exists)
 		{

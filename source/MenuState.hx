@@ -26,7 +26,7 @@ class MenuState extends FlxState
 		btnPlay.x = FlxG.width / 2 - btnPlay.width / 2;
 		btnPlay.y = FlxG.height / 2 - btnPlay.height / 2;
 		add(btnPlay);
-		btnEditor = new FlxButton(0, 0, "Editor", clickPlay);
+		btnEditor = new FlxButton(0, 0, "Editor", clickEditor);
 		btnEditor.x = FlxG.width / 2 - btnEditor.width / 2;
 		btnEditor.y = FlxG.height / 2 - btnEditor.height / 2 + 20;
 		add(btnEditor);
@@ -41,7 +41,7 @@ class MenuState extends FlxState
 	
 	private function clickEditor()
 	{
-		FlxG.switchState(new PlayState());
+		FlxG.switchState(new EditorState());
 	}
 	
 	/**

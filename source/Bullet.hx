@@ -6,7 +6,7 @@ import flixel.util.FlxDestroyUtil;
  * ...
  * @author ...
  */
-class PlayerBullet extends FlxSprite
+class Bullet extends FlxSprite
 {
 	private var speed:Float = 2000;
 	

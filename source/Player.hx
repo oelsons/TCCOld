@@ -114,6 +114,12 @@ class Player extends FlxSprite
 		}
 	}
 	
+	public function killPlayer():Void
+	{
+		alive = false;
+		animation.play("destroy");
+	}
+	
 	override public function destroy():Void
 	{
 		
@@ -123,13 +129,7 @@ class Player extends FlxSprite
 	{
 		if (alive)
 		{
-			if (FlxG.keys.anyPressed(["G"]))
-			{
-				alive = false;
-				animation.play("destroy");
-			}else {
-				movement();	
-			}
+			movement();	
 		}
 		super.update();
 	}
