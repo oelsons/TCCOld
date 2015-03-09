@@ -1,15 +1,20 @@
 package;
 
+import flixel.addons.weapon.FlxBullet;
+import flixel.addons.weapon.FlxWeapon;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.group.FlxTypedSpriteGroup;
+import flixel.group.FlxTypedGroup;
 import flixel.input.gamepad.XboxButtonID;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxMath;
 import flixel.util.FlxDestroyUtil;
+import flixel.util.FlxCollision;
+import openfl.display.FPS;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -21,24 +26,28 @@ class PlayState extends FlxState
 	 */
 	
 	 private var player:Player;
-	 private var grpEnemy:FlxTypedSpriteGroup<Enemy>;
-	 private var grpBullet:FlxTypedSpriteGroup<Bullet>;
+	 private var grpEnemy:FlxTypedGroup<Enemy>;
+	 private var grpBullet:FlxTypedGroup<PlayerBullet>;
 	 private var sndBullet:FlxSound;
 	 private var countFrame:Float = 0;
 	 
+	 private var fps:FPS = new FPS();
+	 
 	override public function create():Void
 	{
-		grpBullet = new FlxTypedSpriteGroup<Bullet>();
+		grpBullet = new FlxTypedGroup<PlayerBullet>();
 		add(grpBullet);
-		
+
 		player = new Player(640,600);
 		add(player);
 		
-		grpEnemy = new FlxTypedSpriteGroup<Enemy>();
+		grpEnemy = new FlxTypedGroup<Enemy>();
 		add(grpEnemy);
 		grpEnemy.add(new Enemy(500, 100));
 		
 		add(new FlxText(100, 100, 200, "Xbox360 Controller " + ((player.gamePad == null) ? "NOT FOUND" : "FOUND")));
+		
+		//trace(FlxG.overlap(player, grpEnemy));
 		
 		sndBullet = FlxG.sound.load(AssetPaths.shot1__wav);
 		super.create();
@@ -52,6 +61,7 @@ class PlayState extends FlxState
 	{
 		player = FlxDestroyUtil.destroy(player);
 		grpBullet = FlxDestroyUtil.destroy(grpBullet);
+		grpEnemy = FlxDestroyUtil.destroy(grpEnemy);
 		super.destroy();
 	}
 
@@ -61,41 +71,50 @@ class PlayState extends FlxState
 	override public function update():Void
 	{
 		super.update();
+		//trace(fps.currentFPS); //Show FPS
 		var shoot:Bool = (player.gamePad != null && player.gamePad.pressed(XboxButtonID.RIGHT_TRIGGER)) ? true : FlxG.keys.anyPressed(["SPACE"]);
 		if (shoot)
 		{
-			trace('lkjlkj');
 			if (countFrame <= 0)
 			{
-					grpBullet.add(new Bullet(player.x+12.5, player.y+5));
-					grpBullet.add(new Bullet(player.x + 72.5, player.y+5));
+					grpBullet.add(new PlayerBullet(player.x+12.5, player.y+5));
+					grpBullet.add(new PlayerBullet(player.x + 72.5, player.y+5));
 					FlxG.camera.shake(0.001, 0.1, null, true, 2);
 					sndBullet.play(true);
 					countFrame = player.rof;
 			}
 			countFrame--;
-			//FlxG.overlap(grpBullet, grpEnemy, bulletHitEnemy);
 		}
+		//FlxG.overlap(grpBullet, grpEnemy, bulletHitEnemy);
 		grpBullet.forEach(bulletTest);
 	}
 	
-	private function bulletTest(B:Bullet)
+	private function bulletTest(B:PlayerBullet)
 	{
-		if (B.y < -20)
-		{
-			B.kill();
-			B.destroy();
-			grpBullet.remove(B);
-		}
+		if (B.y < -20) destroyBullet(B);
+		grpEnemy.forEach(function(E:Enemy) {
+			if (FlxG.pixelPerfectOverlap(B, E))
+			{
+				bulletHitEnemy(B, E);
+			} } );
 	}
 	
-	private function bulletHitEnemy(E:Enemy, B:Bullet)
+	private function destroyBullet(B:PlayerBullet)
 	{
-		trace('açdjaçl');
-		/*if (E.alive && E.exists && B.alive && B.exists)
+		B.kill();
+		B.destroy();
+		grpBullet.remove(B);
+	}
+	
+	private function bulletHitEnemy(B:PlayerBullet, E:Enemy)
+	{
+		if (E.alive && E.exists && B.alive && B.exists)
 		{
+			destroyBullet(B);
 			E.kill();
-			B.kill();
-		}*/
+			E.destroy();
+			grpEnemy.remove(E);
+			grpEnemy.add(new Enemy(E.x + 20, E.y)); // TEST
+		}
 	}
 }

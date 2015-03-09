@@ -6,6 +6,7 @@ import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxMath;
+import flixel.util.FlxDestroyUtil;
 
 /**
  * A FlxState which can be used for the game's menu.
@@ -15,9 +16,32 @@ class MenuState extends FlxState
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
+	
+	private var btnPlay:FlxButton;
+	private var btnEditor:FlxButton;
+	
 	override public function create():Void
 	{
+		btnPlay = new FlxButton(0, 0, "Play", clickPlay);
+		btnPlay.x = FlxG.width / 2 - btnPlay.width / 2;
+		btnPlay.y = FlxG.height / 2 - btnPlay.height / 2;
+		add(btnPlay);
+		btnEditor = new FlxButton(0, 0, "Editor", clickPlay);
+		btnEditor.x = FlxG.width / 2 - btnEditor.width / 2;
+		btnEditor.y = FlxG.height / 2 - btnEditor.height / 2 + 20;
+		add(btnEditor);
+		
 		super.create();
+	}
+	
+	private function clickPlay()
+	{
+		FlxG.switchState(new PlayState());
+	}
+	
+	private function clickEditor()
+	{
+		FlxG.switchState(new PlayState());
 	}
 	
 	/**
@@ -27,6 +51,8 @@ class MenuState extends FlxState
 	override public function destroy():Void
 	{
 		super.destroy();
+		btnPlay = FlxDestroyUtil.destroy(btnPlay);
+		btnEditor = FlxDestroyUtil.destroy(btnEditor);
 	}
 
 	/**
