@@ -1,4 +1,4 @@
-package;
+package playStateFolder ;
 
 import flixel.addons.weapon.FlxBullet;
 import flixel.addons.weapon.FlxWeapon;
@@ -15,6 +15,7 @@ import flixel.util.FlxMath;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxCollision;
 import openfl.display.FPS;
+import flixel.util.FlxRandom;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -27,7 +28,7 @@ class PlayState extends FlxState
 	
 	 private var player:Player;
 	 private var grpEnemy:FlxTypedGroup<Enemy>;
-	 private var grpBullet:FlxTypedGroup<Bullet>;
+	 private var grpBullet:FlxTypedGroup<PBullet>;
 	 private var sndBullet:FlxSound;
 	 private var countFrame:Float = 0;
 	 
@@ -36,11 +37,11 @@ class PlayState extends FlxState
 	 
 	override public function create():Void
 	{
-		grpBullet = new FlxTypedGroup<Bullet>();
+		grpBullet = new FlxTypedGroup<PBullet>();
 		add(grpBullet);
 		
 		startPlayer();
-
+		
 		grpEnemy = new FlxTypedGroup<Enemy>();
 		add(grpEnemy);
 		grpEnemy.add(new Enemy(500, 100));
@@ -83,8 +84,8 @@ class PlayState extends FlxState
 		{
 			if (countFrame <= 0)
 			{
-					grpBullet.add(new Bullet(player.x+12.5, player.y+5));
-					grpBullet.add(new Bullet(player.x + 72.5, player.y+5));
+					grpBullet.add(new PBullet(player.x+12.5, player.y+5));
+					grpBullet.add(new PBullet(player.x + 72.5, player.y+5));
 					FlxG.camera.shake(0.001, 0.1, null, true, 2);
 					sndBullet.play(true);
 					countFrame = player.rof;
@@ -106,7 +107,7 @@ class PlayState extends FlxState
 		}
 	}
 	
-	private function bulletTest(B:Bullet)
+	private function bulletTest(B:PBullet)
 	{
 		if (!B.isOnScreen(FlxG.camera)) destroyBullet(B);
 		grpEnemy.forEach(function(E:Enemy) {
@@ -114,17 +115,17 @@ class PlayState extends FlxState
 			{
 				bulletHitEnemy(B, E);
 			}});
-		trace(grpBullet.length);
+		trace('Objects: '+(grpEnemy.length+grpBullet.length+1)+' FPS: '+fps.currentFPS);
 	}
 	
-	private function destroyBullet(B:Bullet)
+	private function destroyBullet(B:PBullet)
 	{
 		B.kill();
 		B.destroy();
 		grpBullet.remove(B);
 	}
 	
-	private function bulletHitEnemy(B:Bullet, E:Enemy)
+	private function bulletHitEnemy(B:PBullet, E:Enemy)
 	{
 		if (E.alive && E.exists && B.alive && B.exists)
 		{
@@ -132,7 +133,8 @@ class PlayState extends FlxState
 			E.kill();
 			E.destroy();
 			grpEnemy.remove(E);
-			grpEnemy.add(new Enemy(E.x + 20, E.y)); // TEST
+			grpEnemy.add(new Enemy(FlxRandom.intRanged(200, 1200), FlxRandom.intRanged(0, 400))); // TEST
+			grpEnemy.add(new Enemy(FlxRandom.intRanged(200, 1200), FlxRandom.intRanged(0, 400))); // TEST
 		}
 	}
 }

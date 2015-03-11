@@ -1,4 +1,4 @@
-package ;
+package playStateFolder ;
 
 import flixel.FlxSprite;
 import flixel.FlxObject;

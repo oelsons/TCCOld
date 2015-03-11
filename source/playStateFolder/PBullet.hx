@@ -1,4 +1,4 @@
-package ;
+package playStateFolder ;
 import flixel.FlxSprite;
 import flixel.util.FlxAngle;
 import flixel.util.FlxDestroyUtil;
@@ -6,7 +6,7 @@ import flixel.util.FlxDestroyUtil;
  * ...
  * @author ...
  */
-class Bullet extends FlxSprite
+class PBullet extends FlxSprite
 {
 	private var speed:Float = 2000;
 	

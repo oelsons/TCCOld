@@ -7,6 +7,7 @@ import flash.events.Event;
 import flash.Lib;
 import flixel.FlxGame;
 import flixel.FlxState;
+import playStateFolder.PlayState;
 
 class Main extends Sprite 
 {

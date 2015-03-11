@@ -1,5 +1,6 @@
 package;
 
+import editorFolder.EditorState;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -7,6 +8,7 @@ import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxMath;
 import flixel.util.FlxDestroyUtil;
+import playStateFolder.PlayState;
 
 /**
  * A FlxState which can be used for the game's menu.
