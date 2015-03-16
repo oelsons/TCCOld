@@ -2,6 +2,7 @@ package playStateFolder ;
 
 import flixel.addons.weapon.FlxBullet;
 import flixel.addons.weapon.FlxWeapon;
+import flixel.effects.particles.FlxParticle;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -16,6 +17,8 @@ import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxCollision;
 import openfl.display.FPS;
 import flixel.util.FlxRandom;
+import flixel.effects.particles.FlxEmitter;
+import flixel.util.FlxColor;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -30,10 +33,13 @@ class PlayState extends FlxState
 	 private var grpEnemy:FlxTypedGroup<Enemy>;
 	 private var grpBullet:FlxTypedGroup<PBullet>;
 	 private var sndBullet:FlxSound;
+	 private var sndExplosion:FlxSound;
 	 private var countFrame:Float = 0;
 	 
 	 private var fps:FPS = new FPS();
 	 //private var weapon:FlxWeapon = new FlxWeapon("arma", null, Bullet);
+	 
+	 private var _explosionPixel:FlxParticle;
 	 
 	override public function create():Void
 	{
@@ -51,6 +57,7 @@ class PlayState extends FlxState
 		//trace(FlxG.overlap(player, grpEnemy));
 		
 		sndBullet = FlxG.sound.load(AssetPaths.shot1__wav);
+		sndExplosion = FlxG.sound.load(AssetPaths.explosion1__mp3);
 		super.create();
 	}
 	
@@ -89,6 +96,28 @@ class PlayState extends FlxState
 					FlxG.camera.shake(0.001, 0.1, null, true, 2);
 					sndBullet.play(true);
 					countFrame = player.rof;
+					
+					_explosionPixel = new FlxParticle();
+					_explosionPixel.makeGraphic(2, 10, FlxColor.WHITE);
+					_explosionPixel.visible = false;
+					var shellLeft = new FlxEmitter(player.x+100, player.y+20, 1);
+					shellLeft.setXSpeed(1000+player.velocity.x,1000+player.velocity.x);
+					shellLeft.setYSpeed(300,300);
+					shellLeft.bounce = 0.8;
+					add(shellLeft);
+					shellLeft.add(_explosionPixel);
+					shellLeft.start(true, 1);
+					
+					_explosionPixel = new FlxParticle();
+					_explosionPixel.makeGraphic(2, 10, FlxColor.WHITE);
+					_explosionPixel.visible = false;
+					var shellRight = new FlxEmitter(player.x, player.y+20, 1);
+					shellRight.setXSpeed(-1000+player.velocity.x,-1000+player.velocity.x);
+					shellRight.setYSpeed(300, 300);
+					shellRight.bounce = 0.8;
+					add(shellRight);
+					shellRight.add(_explosionPixel);
+					shellRight.start(true, 1);
 			}
 			countFrame--;
 		}
@@ -134,7 +163,31 @@ class PlayState extends FlxState
 			E.destroy();
 			grpEnemy.remove(E);
 			grpEnemy.add(new Enemy(FlxRandom.intRanged(200, 1200), FlxRandom.intRanged(0, 400))); // TEST
-			grpEnemy.add(new Enemy(FlxRandom.intRanged(200, 1200), FlxRandom.intRanged(0, 400))); // TEST
+			if(Math.random() > .8) grpEnemy.add(new Enemy(FlxRandom.intRanged(200, 1200), FlxRandom.intRanged(0, 400))); // TEST
+			
+			sndExplosion.play(true);
+			
+			var fe = new FlxEmitter(B.x, B.y, 30);
+			fe.setXSpeed(-500,500);
+			fe.setYSpeed(-200,50);
+			fe.bounce = 0.8;
+			add(fe);
+			for (i in 0...(Std.int(fe.maxSize / 3))) 
+			{
+				_explosionPixel = new FlxParticle();
+				_explosionPixel.makeGraphic(2, 2, FlxColor.YELLOW);
+				_explosionPixel.visible = false; 
+				fe.add(_explosionPixel);
+				_explosionPixel = new FlxParticle();
+				_explosionPixel.makeGraphic(1, 1, FlxColor.RED);
+				_explosionPixel.visible = false;
+				fe.add(_explosionPixel);
+				_explosionPixel = new FlxParticle();
+				_explosionPixel.makeGraphic(1, 1, FlxColor.WHITE);
+				_explosionPixel.visible = false;
+				fe.add(_explosionPixel);
+			}
+			fe.start(true, 3);
 		}
 	}
 }
